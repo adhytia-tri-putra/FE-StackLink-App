@@ -1,16 +1,30 @@
-# React + Vite
+# Stacklink Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend ini dibangun dengan React + Vite dan bisa di-deploy ke Netlify.
 
-Currently, two official plugins are available:
+## Environment variable
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Untuk local development atau deploy production, set:
 
-## React Compiler
+```env
+VITE_API_BASE_URL=https://be-stacklink-app-production.up.railway.app
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Frontend akan mengirim request API langsung ke backend tersebut, termasuk endpoint WebSocket analytics.
 
-## Expanding the ESLint configuration
+## Deploy ke Netlify
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Gunakan setting berikut di Netlify:
+
+```txt
+Build command: npm run build
+Publish directory: dist
+```
+
+Tambahkan environment variable ini di Netlify Site Settings:
+
+```txt
+VITE_API_BASE_URL = https://be-stacklink-app-production.up.railway.app
+```
+
+File `netlify.toml` sudah dikonfigurasi untuk SPA redirect ke `index.html`, jadi route React tetap jalan saat page di-refresh langsung di Netlify.
