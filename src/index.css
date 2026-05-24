@@ -1,0 +1,45 @@
+@import url('https://rsms.me/inter/inter.css');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  body {
+    @apply m-0 min-h-screen bg-surface text-on-surface antialiased;
+  }
+
+  #root {
+    @apply min-h-screen;
+  }
+}
+
+@layer components {
+  .shadow-soft {
+    @apply shadow-[0_4px_20px_rgba(0,0,0,0.04)];
+  }
+
+  .shadow-soft-lg {
+    @apply shadow-[0_8px_24px_rgba(0,0,0,0.08)];
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-full bg-primary text-primary-on font-medium transition-all hover:opacity-90 active:translate-y-0.5;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-full bg-surface-container text-on-surface font-medium transition-all hover:bg-surface-container-high;
+  }
+
+  .card {
+    @apply bg-surface-container-lowest rounded-xl p-6 shadow-soft border border-outline-variant;
+  }
+
+  .card-lg {
+    @apply bg-surface-container-lowest rounded-3xl p-8 shadow-soft border border-outline-variant;
+  }
+}
