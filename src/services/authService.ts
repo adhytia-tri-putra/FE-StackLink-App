@@ -49,6 +49,22 @@ export const authService = {
     return response.data;
   },
 
+  forgotPassword: async (email: string): Promise<{ developmentToken?: string }> => {
+    const response = await apiRequest("/api/auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+
+    return response.data || {};
+  },
+
+  resetPassword: async (token: string, password: string): Promise<void> => {
+    await apiRequest("/api/auth/reset-password", {
+      method: "POST",
+      body: JSON.stringify({ token, password }),
+    });
+  },
+
   logout: async () => {
     try {
       await apiRequest("/api/auth/logout", {
