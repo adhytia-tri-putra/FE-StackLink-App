@@ -59,6 +59,8 @@ const Insights: React.FC = () => {
   const [analytics, setAnalytics] = useState<AnalyticsSummary | null>(null);
   const [timePeriod, setTimePeriod] = useState<AnalyticsPeriod>("30d");
   const [loading, setLoading] = useState(true);
+  const [customFrom, setCustomFrom] = useState("");
+  const [customTo, setCustomTo] = useState("");
 
   useEffect(() => {
     const initialize = async () => {
@@ -70,7 +72,7 @@ const Insights: React.FC = () => {
       setLoading(true);
 
       try {
-        const summary = await analyticsService.getSummary(timePeriod);
+        const summary = await analyticsService.getSummary(timePeriod, timePeriod === "custom" && customFrom && customTo ? { from: customFrom, to: customTo } : undefined);
         setAnalytics(summary);
       } catch (error) {
         console.error("Failed to load insights:", error);
@@ -83,7 +85,7 @@ const Insights: React.FC = () => {
     };
 
     initialize();
-  }, [navigate, timePeriod]);
+  }, [navigate, timePeriod, customFrom, customTo]);
 
   useEffect(() => {
     let closed = false;
@@ -134,7 +136,7 @@ const Insights: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-          <button type="button" onClick={() => void analyticsService.exportCsv(timePeriod).catch((error) => window.alert((error as Error).message))} className="rounded-full border border-primary px-4 py-2 text-sm font-semibold text-primary">Export CSV</button>
+          <button type="button" disabled={timePeriod === "custom"} onClick={() => timePeriod !== "custom" && void analyticsService.exportCsv(timePeriod).catch((error) => window.alert((error as Error).message))} className="rounded-full border border-primary px-4 py-2 text-sm font-semibold text-primary disabled:opacity-50">Export CSV</button>
           <div className="flex w-fit rounded-full border border-outline-variant/60 bg-surface-container-lowest p-1 shadow-soft">
             {(["7d", "30d", "90d"] as const).map((period) => (
               <button
@@ -149,6 +151,7 @@ const Insights: React.FC = () => {
             ))}
           </div></div>
         </header>
+        <div className="mb-4 flex flex-wrap items-end gap-2"><label className="text-sm">From<input type="date" value={customFrom} onChange={(event) => setCustomFrom(event.target.value)} className="ml-2 rounded-xl border px-3 py-2" /></label><label className="text-sm">To<input type="date" value={customTo} onChange={(event) => setCustomTo(event.target.value)} className="ml-2 rounded-xl border px-3 py-2" /></label><button type="button" disabled={!customFrom || !customTo} onClick={() => setTimePeriod("custom")} className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-on disabled:opacity-50">Apply range</button></div>
 
         <div className="grid gap-4 md:grid-cols-3">
           <MetricCard
@@ -211,6 +214,7 @@ const Insights: React.FC = () => {
           </h2>
           <LinkList links={analytics?.links ?? []} />
         </section>
+        <section className="mt-4 grid gap-4 md:grid-cols-3">{[["Countries", analytics?.countries], ["Browsers", analytics?.browsers], ["Operating systems", analytics?.operatingSystems]].map(([title, items]) => <article key={String(title)} className="rounded-[16px] bg-surface-container-lowest p-5 shadow-soft"><h2 className="text-xl font-semibold">{String(title)}</h2><div className="mt-4 space-y-2">{((items || []) as Array<{name:string;clicks:number}>).map((item) => <div key={item.name} className="flex justify-between text-sm"><span>{item.name}</span><strong>{item.clicks}</strong></div>)}</div></article>)}</section>
       </div>
     </section>
   );

@@ -2,7 +2,7 @@ import { apiRequest } from "../api/client";
 import { createClient, type RealtimeChannel } from "@supabase/supabase-js";
 import { getAnalyticsRealtimeTopic } from "../lib/realtimeTopic";
 
-export type AnalyticsPeriod = "7d" | "30d" | "90d";
+export type AnalyticsPeriod = "7d" | "30d" | "90d" | "custom";
 
 export interface AnalyticsSummaryLink {
   id: string;
@@ -58,6 +58,9 @@ export interface AnalyticsSummary {
   traffic: AnalyticsTrafficPoint[];
   deviceSplit: AnalyticsDeviceSplit[];
   referrers: AnalyticsReferrer[];
+  countries: Array<{ name: string; clicks: number }>;
+  browsers: Array<{ name: string; clicks: number }>;
+  operatingSystems: Array<{ name: string; clicks: number }>;
 }
 
 export interface AnalyticsUpdatePayload {
@@ -168,8 +171,11 @@ const buildAnalyticsSocketUrl = (token?: string) => {
 };
 
 export const analyticsService = {
-  getSummary: async (period?: AnalyticsPeriod): Promise<AnalyticsSummary> => {
-    const query = period ? `?period=${period}` : "";
+  getSummary: async (period?: AnalyticsPeriod, range?: { from: string; to: string }): Promise<AnalyticsSummary> => {
+    const params = new URLSearchParams();
+    if (period && period !== "custom") params.set("period", period);
+    if (range?.from && range.to) { params.set("from", range.from); params.set("to", range.to); }
+    const query = params.size ? `?${params}` : "";
     const response = await apiRequest(`/api/analytics/summary${query}`, {
       method: "GET",
     });
@@ -181,7 +187,7 @@ export const analyticsService = {
     return response.data;
   },
 
-  exportCsv: async (period: AnalyticsPeriod): Promise<void> => {
+  exportCsv: async (period: Exclude<AnalyticsPeriod, "custom">): Promise<void> => {
     const token = localStorage.getItem("stacklink_token");
     const base = API_BASE_URL.replace(/\/$/, "");
     const response = await fetch(`${base}/api/analytics/export.csv?period=${period}`, {
