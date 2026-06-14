@@ -12,6 +12,8 @@ VITE_API_BASE_URL=https://be-stacklink-app-production.up.railway.app
 
 Frontend akan mengirim request API langsung ke backend tersebut, termasuk endpoint WebSocket analytics.
 
+Untuk development lokal, kosongkan `VITE_API_BASE_URL` dan gunakan `VITE_DEV_PROXY_TARGET=http://127.0.0.1:5000`. Vite akan meneruskan `/api`, `/u`, dan WebSocket analytics ke backend.
+
 ## Deploy ke Netlify
 
 Gunakan setting berikut di Netlify:
