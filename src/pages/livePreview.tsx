@@ -471,6 +471,10 @@ const LivePreviewPage: React.FC = () => {
   const [error, setError] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const [trackingConsent, setConsentState] = useState(() => getTrackingConsent());
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportReason, setReportReason] = useState("Spam or misleading content");
+  const [reportDetails, setReportDetails] = useState("");
+  const [reportStatus, setReportStatus] = useState("");
 
   useEffect(() => {
     const resizeHandler = () => setIsMobile(window.innerWidth < 1024);
@@ -544,6 +548,14 @@ const LivePreviewPage: React.FC = () => {
     linkService.trackClick(publicUsername, link.id).catch((err) => console.error("Analitik error", err));
   };
 
+  const submitReport = async () => {
+    if (!profile?.username) return;
+    try {
+      setReportStatus(await profileService.reportPublicProfile(profile.username, reportReason, reportDetails));
+      setReportOpen(false);
+    } catch (err) { setReportStatus((err as Error).message); }
+  };
+
   if (loading) {
     return (
       <section className="flex min-h-screen items-center justify-center bg-surface p-6">
@@ -579,6 +591,9 @@ const LivePreviewPage: React.FC = () => {
     <section className="flex min-h-screen items-center justify-center bg-surface p-4 sm:p-6">
       {previewPanel}
       <TrackingConsentBanner enabled={Boolean(profile.googleAnalyticsId || profile.metaPixelId || profile.tiktokPixelId)} />
+      <button type="button" onClick={() => setReportOpen(true)} className="fixed right-4 top-4 rounded-full bg-white/90 px-4 py-2 text-xs font-semibold text-on-surface-variant shadow">Report profile</button>
+      {reportStatus && <p className="fixed bottom-4 left-4 rounded-xl bg-white px-4 py-3 text-sm shadow">{reportStatus}</p>}
+      {reportOpen && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"><div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl"><h2 className="text-xl font-semibold">Report profile</h2><label className="mt-4 block text-sm font-medium">Reason<select value={reportReason} onChange={(event) => setReportReason(event.target.value)} className="mt-2 w-full rounded-xl border p-3"><option>Spam or misleading content</option><option>Impersonation</option><option>Malware or unsafe link</option><option>Harassment or illegal content</option></select></label><label className="mt-4 block text-sm font-medium">Details<textarea value={reportDetails} onChange={(event) => setReportDetails(event.target.value)} maxLength={500} className="mt-2 min-h-24 w-full rounded-xl border p-3" /></label><div className="mt-4 flex gap-2"><button type="button" onClick={submitReport} className="rounded-full bg-primary px-5 py-2 font-semibold text-primary-on">Submit</button><button type="button" onClick={() => setReportOpen(false)} className="rounded-full border px-5 py-2 font-semibold">Cancel</button></div></div></div>}
     </section>
   );
 };

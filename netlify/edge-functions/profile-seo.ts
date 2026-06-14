@@ -1,7 +1,7 @@
 const RESERVED_PATHS = new Set([
   "login", "register", "forgot-password", "reset-password", "verify-email", "privacy", "terms", "help",
   "welcome", "dashboard", "links", "insights", "profile-settings", "account-settings", "publishing",
-  "addlink", "add-link", "preview", "preview-links", "old-dashboard", "api", "assets",
+  "addlink", "add-link", "preview", "preview-links", "old-dashboard", "billing", "admin", "api", "assets",
 ]);
 
 function escapeHtml(value: unknown): string {

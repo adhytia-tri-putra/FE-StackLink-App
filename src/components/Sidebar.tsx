@@ -75,6 +75,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onOpenPreview }) => {
     { icon: IconUser, label: "Account Settings", path: "/account-settings", match: ["/account-settings"] },
     { icon: IconEye, label: "Publishing", path: "/publishing", match: ["/publishing"] },
     { icon: IconInsights, label: "Plans & Billing", path: "/billing", match: ["/billing"] },
+    ...(profile?.role === "ADMIN" ? [{ icon: IconSettings, label: "Admin", path: "/admin", match: ["/admin"] }] : []),
   ];
 
   const isActive = (matches: string[]) => matches.some((path) => location.pathname === path);
@@ -186,7 +187,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onOpenPreview }) => {
 
       <nav className="fixed bottom-2 left-2 right-2 z-50 grid grid-cols-5 gap-1 rounded-[20px] border border-outline-variant/70 bg-surface-container-lowest/95 p-1.5 shadow-soft backdrop-blur lg:hidden">
         {navItems
-          .filter((item) => !["Profile Settings", "Account Settings", "Publishing", "Plans & Billing"].includes(item.label))
+          .filter((item) => !["Profile Settings", "Account Settings", "Publishing", "Plans & Billing", "Admin"].includes(item.label))
           .map((item) => {
             const Icon = item.icon;
             const active = isActive(item.match);

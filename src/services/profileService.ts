@@ -32,6 +32,8 @@ export interface ProfileData {
   tiktokPixelId?: string;
   plan?: string;
   planStatus?: string;
+  role?: string;
+  suspendedAt?: string | null;
   links?: LinkData[];
 }
 
@@ -73,6 +75,8 @@ const mapUserToProfile = (user: any): ProfileData => ({
   tiktokPixelId: user.tiktokPixelId ?? "",
   plan: user.plan ?? "FREE",
   planStatus: user.planStatus ?? "ACTIVE",
+  role: user.role ?? "USER",
+  suspendedAt: user.suspendedAt ?? null,
   links: user.links?.map((link: any) => ({
     id: link.id,
     title: link.title,
@@ -85,6 +89,10 @@ const mapUserToProfile = (user: any): ProfileData => ({
 });
 
 export const profileService = {
+  reportPublicProfile: async (username: string, reason: string, details: string) => {
+    const response = await apiRequest(`/u/${encodeURIComponent(username)}/report`, { method: "POST", body: JSON.stringify({ reason, details }) });
+    return response.message as string;
+  },
   getMyProfile: async (): Promise<ProfileData> => {
     const response = await apiRequest("/api/profiles/me", { method: "GET" });
     if (!response.success) {
