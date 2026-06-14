@@ -9,6 +9,7 @@ import {
 import { profileService, ProfileData } from "../services/profileService";
 import { PreviewSidebar } from "./livePreview";
 import AddLinkModal from "../components/AddLinkModal";
+import { useConfirm } from "../components/ConfirmProvider";
 
 type IconProps = React.SVGProps<SVGSVGElement>;
 type LinkWithClicks = LinkItem & { clicks?: number };
@@ -194,6 +195,7 @@ const normalizeUrl = (url: string) =>
 
 const LinksPage: React.FC = () => {
   const navigate = useNavigate();
+  const confirmAction = useConfirm();
   const [links, setLinks] = useState<LinkWithClicks[]>([]);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -335,7 +337,7 @@ const LinksPage: React.FC = () => {
   };
 
   const handleDeleteLink = async (id: string) => {
-    if (!confirm("Delete this link?")) return;
+    if (!(await confirmAction({ title: "Delete link?", message: "The link and its click history will be permanently removed.", confirmLabel: "Delete link", danger: true }))) return;
 
     try {
       await linkService.deleteLink(id);

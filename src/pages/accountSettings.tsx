@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { accountService } from "../services/accountService";
 import { authService } from "../services/authService";
 import { profileService } from "../services/profileService";
+import { useConfirm } from "../components/ConfirmProvider";
 
 const inputClass = "mt-2 w-full rounded-xl border border-outline-variant/70 bg-surface-container-lowest px-4 py-3 text-on-surface outline-none focus:border-primary";
 
 const AccountSettings: React.FC = () => {
   const navigate = useNavigate();
+  const confirm = useConfirm();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
@@ -85,7 +87,7 @@ const AccountSettings: React.FC = () => {
           <button disabled={busy} onClick={() => void run(accountService.logoutAll, "All sessions closed.", true)} className="mt-4 rounded-full border border-primary px-5 py-2.5 font-semibold text-primary disabled:opacity-60">Logout all devices</button>
         </article>
 
-        <form className="rounded-[20px] border border-red-200 bg-red-50 p-5" onSubmit={(event) => { event.preventDefault(); if (window.confirm("Delete this account and all of its links permanently?")) void run(() => accountService.deleteAccount(deletePassword), "Account deleted.", true); }}>
+        <form className="rounded-[20px] border border-red-200 bg-red-50 p-5" onSubmit={(event) => { event.preventDefault(); void confirm({ title: "Delete account?", message: "This permanently deletes your profile, links, analytics, and sessions.", confirmLabel: "Delete account", danger: true }).then((approved) => { if (approved) void run(() => accountService.deleteAccount(deletePassword), "Account deleted.", true); }); }}>
           <h2 className="text-xl font-semibold text-red-700">Delete account</h2>
           <p className="mt-2 text-sm text-red-600">This permanently deletes your profile, links, clicks, and sessions.</p>
           <input type="password" value={deletePassword} onChange={(event) => setDeletePassword(event.target.value)} placeholder="Confirm with your password" className={inputClass} required />

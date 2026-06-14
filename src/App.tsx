@@ -22,11 +22,12 @@ import PublishingSettings from "./pages/publishingSettings";
 import ToastHost from "./components/ToastHost";
 import InfoPage from "./pages/infoPage";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { ConfirmProvider } from "./components/ConfirmProvider";
 
 const App: React.FC = () => {
   const isCustomHost = !["localhost", "127.0.0.1"].includes(window.location.hostname) && !window.location.hostname.endsWith("netlify.app");
   return (
-    <ErrorBoundary><BrowserRouter>
+    <ErrorBoundary><ConfirmProvider><BrowserRouter>
       <ToastHost />
       <Routes>
         <Route element={<AuthLayout />}>
@@ -56,7 +57,7 @@ const App: React.FC = () => {
           <Route path="/:username" element={<Preview />} />
         </Route>
       </Routes>
-    </BrowserRouter></ErrorBoundary>
+    </BrowserRouter></ConfirmProvider></ErrorBoundary>
   );
 };
 
