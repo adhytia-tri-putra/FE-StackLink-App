@@ -43,10 +43,11 @@ const Register: React.FC = () => {
       <div className="w-full max-w-[420px] rounded-[28px] bg-white p-8 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-gray-100">
         <form className="space-y-5" onSubmit={handleRegister}>
           <div>
-            <label className={authLabelClass}>Full Name</label>
+            <label htmlFor="register-name" className={authLabelClass}>Full Name</label>
             <div className="relative">
               <UserIcon />
               <input
+                id="register-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 type="text"
@@ -58,10 +59,11 @@ const Register: React.FC = () => {
           </div>
 
           <div>
-            <label className={authLabelClass}>Email</label>
+            <label htmlFor="register-email" className={authLabelClass}>Email</label>
             <div className="relative">
               <MailIcon />
               <input
+                id="register-email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 type="email"
@@ -73,10 +75,11 @@ const Register: React.FC = () => {
           </div>
 
           <div>
-            <label className={authLabelClass}>Password</label>
+            <label htmlFor="register-password" className={authLabelClass}>Password</label>
             <div className="relative">
               <LockIcon />
               <input
+                id="register-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 type="password"

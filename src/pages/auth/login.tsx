@@ -43,10 +43,11 @@ const Login: React.FC = () => {
       <div className="w-full max-w-[420px] rounded-[28px] bg-white p-8 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-gray-100">
         <form className="space-y-5" onSubmit={handleLogin}>
           <div>
-            <label className={authLabelClass}>Email</label>
+            <label htmlFor="login-email" className={authLabelClass}>Email</label>
             <div className="relative">
               <MailIcon />
               <input
+                id="login-email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 type="email"
@@ -59,7 +60,7 @@ const Login: React.FC = () => {
 
           <div>
             <div className="mb-2 flex items-center justify-between">
-              <label className={authLabelClass}>Password</label>
+              <label htmlFor="login-password" className={authLabelClass}>Password</label>
               <Link to="/forgot-password" className="text-sm font-medium text-[#2388ff] hover:underline">
                 Forgot Password?
               </Link>
@@ -67,6 +68,7 @@ const Login: React.FC = () => {
             <div className="relative">
               <LockIcon />
               <input
+                id="login-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 type={showPassword ? "text" : "password"}
