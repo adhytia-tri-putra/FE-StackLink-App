@@ -2,7 +2,9 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.js";
-import "./lib/monitoring";
+import { initMonitoring } from "./lib/monitoring";
+
+void initMonitoring();
 
 const rootElement = document.getElementById("root");
 
