@@ -86,16 +86,27 @@ const Insights: React.FC = () => {
   }, [navigate, timePeriod]);
 
   useEffect(() => {
-    const source = analyticsService.subscribe((event) => {
+    let closed = false;
+    let unsubscribe: (() => void) | null = null;
+
+    void analyticsService.subscribe((event) => {
       if (event.type !== "analytics-update") return;
       const payload = event.payload as AnalyticsUpdatePayload | undefined;
       if (!payload || !payload.linkId) return;
 
       setAnalytics((current) => (current ? applyRealtimeAnalyticsUpdate(current, payload) : current));
+    }).then((source) => {
+      if (closed) {
+        source.close();
+        return;
+      }
+
+      unsubscribe = () => source.close();
     });
 
     return () => {
-      source.close();
+      closed = true;
+      unsubscribe?.();
     };
   }, []);
 

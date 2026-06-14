@@ -1,4 +1,6 @@
 import { apiRequest } from "../api/client";
+import { createClient, type RealtimeChannel } from "@supabase/supabase-js";
+import { getAnalyticsRealtimeTopic } from "../lib/realtimeTopic";
 
 export type AnalyticsPeriod = "7d" | "30d" | "90d";
 
@@ -150,6 +152,8 @@ export function applyRealtimeAnalyticsUpdate(
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL ?? "";
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "";
 
 const buildAnalyticsSocketUrl = (token?: string) => {
   const query = token ? `?token=${encodeURIComponent(token)}` : "";
@@ -177,9 +181,44 @@ export const analyticsService = {
     return response.data;
   },
 
-  subscribe: (onEvent: (event: { type: string; payload: any }) => void): WebSocket => {
+  subscribe: async (
+    onEvent: (event: { type: string; payload: any }) => void
+  ): Promise<{ close: () => void }> => {
     const token = localStorage.getItem("stacklink_token");
-    const socketUrl = buildAnalyticsSocketUrl(token ?? undefined);
+    if (!token) {
+      return { close: () => undefined };
+    }
+
+    if (SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY) {
+      const topic = await getAnalyticsRealtimeTopic(token);
+      const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+      const channel: RealtimeChannel = supabase
+        .channel(topic, {
+          config: {
+            private: false,
+          },
+        })
+        .on("broadcast", { event: "analytics-update" }, (payload) => {
+          onEvent({
+            type: payload.event ?? "analytics-update",
+            payload: payload.payload ?? {},
+          });
+        });
+
+      channel.subscribe((status) => {
+        if (status === "CHANNEL_ERROR") {
+          console.warn("Supabase analytics subscription error");
+        }
+      });
+
+      return {
+        close: () => {
+          supabase.removeChannel(channel);
+        },
+      };
+    }
+
+    const socketUrl = buildAnalyticsSocketUrl(token);
     const socket = new WebSocket(socketUrl);
 
     const handleMessage = (event: MessageEvent) => {
@@ -196,6 +235,6 @@ export const analyticsService = {
       console.warn("WebSocket analytics subscription error", error);
     });
 
-    return socket;
+    return { close: () => socket.close() };
   },
 };
