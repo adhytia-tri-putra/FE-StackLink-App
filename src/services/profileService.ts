@@ -8,6 +8,8 @@ export interface LinkData {
   isActive?: boolean;
   icon?: string | null;
   position: number;
+  blockType?: string;
+  description?: string | null;
 }
 
 export interface ProfileData {
@@ -85,6 +87,8 @@ const mapUserToProfile = (user: any): ProfileData => ({
     active: link.active ?? link.isActive ?? true,
     isActive: link.isActive ?? link.active ?? true,
     position: link.position,
+    blockType: link.blockType ?? "LINK",
+    description: link.description ?? null,
   })),
 });
 

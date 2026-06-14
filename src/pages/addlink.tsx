@@ -14,6 +14,7 @@ const AddLink: React.FC = () => {
   const [utmMedium, setUtmMedium] = useState("");
   const [utmCampaign, setUtmCampaign] = useState("");
   const [error, setError] = useState("");
+  const [blockType, setBlockType] = useState("LINK");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -21,13 +22,14 @@ const AddLink: React.FC = () => {
     setLoading(true);
 
     try {
-      if (!title.trim() || !url.trim()) {
+      const urlOptional = ["HEADING", "DIVIDER"].includes(blockType);
+      if (!title.trim() || (!urlOptional && !url.trim())) {
         setError("Judul dan URL diperlukan");
         setLoading(false);
         return;
       }
 
-      const fullUrl = new URL(url.startsWith("http") ? url : `https://${url}`);
+      const fullUrl = new URL(urlOptional ? "https://stacklink.local/" : url.startsWith("http") ? url : `https://${url}`);
       if (utmSource) fullUrl.searchParams.set("utm_source", utmSource);
       if (utmMedium) fullUrl.searchParams.set("utm_medium", utmMedium);
       if (utmCampaign) fullUrl.searchParams.set("utm_campaign", utmCampaign);
@@ -36,7 +38,8 @@ const AddLink: React.FC = () => {
         title,
         fullUrl.toString(),
         description || null,
-        { startsAt: startsAt ? new Date(startsAt).toISOString() : null, endsAt: endsAt ? new Date(endsAt).toISOString() : null }
+        { startsAt: startsAt ? new Date(startsAt).toISOString() : null, endsAt: endsAt ? new Date(endsAt).toISOString() : null },
+        { blockType, description: description || null }
       );
 
       navigate("/links");
@@ -68,6 +71,8 @@ const AddLink: React.FC = () => {
               </div>
             )}
 
+            <label className="block"><span className="text-[15px] font-semibold text-on-surface">Content type</span><select value={blockType} onChange={(event) => setBlockType(event.target.value)} className="mt-2 w-full rounded-xl bg-surface-container-low px-4 py-3"><option value="LINK">Link button</option><option value="YOUTUBE">YouTube embed</option><option value="SPOTIFY">Spotify embed</option><option value="SOCIAL">Social profile</option><option value="HEADING">Heading</option><option value="DIVIDER">Divider</option><option value="CONTACT">Contact</option><option value="DONATION">Donation</option></select></label>
+
             <label className="block">
               <span className="text-[15px] font-semibold text-on-surface">Title *</span>
               <input
@@ -91,7 +96,7 @@ const AddLink: React.FC = () => {
               <input value={utmCampaign} onChange={(event) => setUtmCampaign(event.target.value)} placeholder="Campaign" className="rounded-xl bg-surface-container-low px-3 py-2.5" />
             </div></fieldset>
 
-            <label className="block">
+            <label className={`block ${["HEADING", "DIVIDER"].includes(blockType) ? "hidden" : ""}`}>
               <span className="text-[15px] font-semibold text-on-surface">URL *</span>
               <input
                 type="text"
@@ -100,7 +105,7 @@ const AddLink: React.FC = () => {
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 className="mt-2 w-full rounded-xl border border-transparent bg-surface-container-low px-4 py-3 text-base text-on-surface outline-none transition placeholder:text-on-surface-variant focus:border-primary"
-                required
+                required={!(["HEADING", "DIVIDER"].includes(blockType))}
               />
             </label>
 

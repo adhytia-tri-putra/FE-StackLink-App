@@ -18,6 +18,18 @@ type PreviewLink = Partial<LinkData> &
     url: string;
   };
 
+function getEmbedUrl(link: PreviewLink): string | null {
+  try {
+    const url = new URL(link.url);
+    if (link.blockType === "YOUTUBE") {
+      const id = url.hostname.includes("youtu.be") ? url.pathname.slice(1) : url.searchParams.get("v");
+      return id ? `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}` : null;
+    }
+    if (link.blockType === "SPOTIFY" && url.hostname.includes("spotify.com")) return `https://open.spotify.com/embed${url.pathname}`;
+  } catch { return null; }
+  return null;
+}
+
 type LivePreviewPanelProps = {
   profile?: ProfileData | null;
   links?: PreviewLink[];
@@ -402,6 +414,10 @@ export const LivePreviewPanel: React.FC<LivePreviewPanelProps> = ({
               {hasLinks ? (
                 previewLinks.map((link, index) => {
                   const Icon = iconSet[index % iconSet.length];
+                  const embedUrl = getEmbedUrl(link);
+                  if (link.blockType === "DIVIDER") return <hr key={link.id} className="my-5 border-white/50" />;
+                  if (link.blockType === "HEADING") return <div key={link.id} className="pt-3 text-left"><h4 className="text-lg font-semibold" style={{ color: textColor }}>{link.title}</h4>{link.description && <p className="mt-1 text-sm" style={{ color: mutedColor }}>{link.description}</p>}</div>;
+                  if (embedUrl) return <div key={link.id} className="overflow-hidden rounded-2xl bg-black/10"><iframe src={embedUrl} title={link.title} className="aspect-video w-full" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" /></div>;
 
                   return (
                     <a
