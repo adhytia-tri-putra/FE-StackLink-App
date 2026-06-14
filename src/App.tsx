@@ -15,6 +15,7 @@ import LinksPage from "./pages/linksPage";
 import Insights from "./pages/insights";
 import Preview from "./pages/preview";
 import ProfileSettings from "./pages/profileSettings";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App: React.FC = () => {
   return (
@@ -26,16 +27,18 @@ const App: React.FC = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/welcome" element={<Welcome />} />
-          <Route path="/dashboard" element={<DashboardOverview />} />
-          <Route path="/links" element={<LinksPage />} />
-          <Route path="/insights" element={<Insights />} />
-          <Route path="/profile-settings" element={<ProfileSettings />} />
-          <Route path="/addlink" element={<AddLink />} />
-          <Route path="/add-link" element={<AddLink />} />
-          <Route path="/preview" element={<Preview />} />
-          <Route path="/preview-links" element={<Preview />} />
-          <Route path="/old-dashboard" element={<Dashboard />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/welcome" element={<Welcome />} />
+            <Route path="/dashboard" element={<DashboardOverview />} />
+            <Route path="/links" element={<LinksPage />} />
+            <Route path="/insights" element={<Insights />} />
+            <Route path="/profile-settings" element={<ProfileSettings />} />
+            <Route path="/addlink" element={<AddLink />} />
+            <Route path="/add-link" element={<AddLink />} />
+            <Route path="/preview" element={<Preview />} />
+            <Route path="/preview-links" element={<Preview />} />
+            <Route path="/old-dashboard" element={<Dashboard />} />
+          </Route>
           <Route path="/:username" element={<Preview />} />
         </Route>
       </Routes>
