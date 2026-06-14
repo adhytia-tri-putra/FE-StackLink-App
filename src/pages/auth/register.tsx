@@ -18,8 +18,8 @@ const Register: React.FC = () => {
     try {
       const username = name.trim().toLowerCase().replace(/\s+/g, "-");
       await authService.register(username, name, email, password);
-      alert("Registrasi berhasil. Silakan login.");
-      navigate("/login");
+      await authService.login(email, password);
+      navigate("/welcome", { replace: true });
     } catch (error) {
       alert((error as Error).message || "Registrasi gagal. Coba lagi.");
     } finally {
