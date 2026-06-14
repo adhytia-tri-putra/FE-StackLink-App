@@ -48,6 +48,13 @@ const PublishingSettings: React.FC = () => {
           </div>
           {diagnostics?.pixels && <div className="mt-4 grid gap-2 text-sm sm:grid-cols-3">{Object.entries(diagnostics.pixels).map(([name, value]: [string, any]) => <span key={name} className={`rounded-xl p-3 ${value.configured && value.valid ? "bg-emerald-50 text-emerald-700" : "bg-surface-container text-on-surface-variant"}`}>{name}: {value.configured ? value.valid ? "ready" : "invalid" : "not configured"}</span>)}</div>}
         </article>
+        {diagnostics?.production && <article className="rounded-[20px] border border-outline-variant/60 bg-surface-container-lowest p-5 shadow-soft">
+          <h2 className="text-xl font-semibold">Production readiness</h2>
+          <p className="mt-2 text-sm text-on-surface-variant">Configuration status only. Secret values are never returned to the browser.</p>
+          <div className="mt-4 grid gap-2 sm:grid-cols-2">
+            {Object.entries(diagnostics.production.checks).map(([name, configured]) => <span key={name} className={`rounded-xl p-3 text-sm font-medium ${configured ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{name}: {configured ? "configured" : "missing"}</span>)}
+          </div>
+        </article>}
         {status && <p className="rounded-xl bg-surface-container p-3 text-sm font-medium">{status}</p>}
         <div className="flex flex-wrap gap-3"><button disabled={saving} className="rounded-full bg-primary px-6 py-3 font-semibold text-primary-on disabled:opacity-60">{saving ? "Saving..." : "Save publishing settings"}</button><button type="button" onClick={runDiagnostics} className="rounded-full border border-primary px-6 py-3 font-semibold text-primary">Run diagnostics</button></div>
       </form>
