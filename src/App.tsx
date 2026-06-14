@@ -17,6 +17,7 @@ import Preview from "./pages/preview";
 import ProfileSettings from "./pages/profileSettings";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AccountSettings from "./pages/accountSettings";
+import VerifyEmail from "./pages/auth/verifyEmail";
 
 const App: React.FC = () => {
   return (
@@ -28,6 +29,7 @@ const App: React.FC = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/welcome" element={<Welcome />} />
             <Route path="/dashboard" element={<DashboardOverview />} />

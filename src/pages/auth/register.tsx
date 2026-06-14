@@ -17,9 +17,9 @@ const Register: React.FC = () => {
     setLoading(true);
     try {
       const username = name.trim().toLowerCase().replace(/\s+/g, "-");
-      await authService.register(username, name, email, password);
-      await authService.login(email, password);
-      navigate("/welcome", { replace: true });
+      const result = await authService.register(username, name, email, password);
+      const token = result.developmentToken ? `?token=${encodeURIComponent(result.developmentToken)}` : "";
+      navigate(`/verify-email${token}`, { replace: true, state: { email } });
     } catch (error) {
       alert((error as Error).message || "Registrasi gagal. Coba lagi.");
     } finally {

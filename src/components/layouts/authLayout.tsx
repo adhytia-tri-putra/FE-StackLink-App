@@ -6,7 +6,7 @@ import { LivePreviewModal } from "../../pages/livePreview";
 const AuthLayout: React.FC = () => {
   const { pathname } = useLocation();
 
-  const noSidebarRoutes = ["/login", "/register", "/forgot-password", "/reset-password", "/welcome"];
+  const noSidebarRoutes = ["/login", "/register", "/forgot-password", "/reset-password", "/verify-email", "/welcome"];
   const routesWithSidebar = [
     "/dashboard",
     "/links",

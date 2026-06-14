@@ -65,6 +65,13 @@ export const authService = {
     });
   },
 
+  verifyEmail: async (token: string): Promise<void> => {
+    await apiRequest("/api/auth/verify-email", {
+      method: "POST",
+      body: JSON.stringify({ token }),
+    });
+  },
+
   logout: async () => {
     try {
       await apiRequest("/api/auth/logout", {
