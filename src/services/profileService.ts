@@ -12,6 +12,7 @@ export interface LinkData {
 
 export interface ProfileData {
   username: string;
+  email?: string;
   name?: string;
   headline?: string;
   bio?: string;
@@ -43,6 +44,7 @@ export interface ThemeUpdatePayload {
 
 const mapUserToProfile = (user: any): ProfileData => ({
   username: user.username,
+  email: user.email,
   name: user.name,
   headline: user.profile?.headline ?? user.headline ?? "",
   bio: user.profile?.bio ?? user.bio ?? "",

@@ -16,6 +16,7 @@ import Insights from "./pages/insights";
 import Preview from "./pages/preview";
 import ProfileSettings from "./pages/profileSettings";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AccountSettings from "./pages/accountSettings";
 
 const App: React.FC = () => {
   return (
@@ -33,6 +34,7 @@ const App: React.FC = () => {
             <Route path="/links" element={<LinksPage />} />
             <Route path="/insights" element={<Insights />} />
             <Route path="/profile-settings" element={<ProfileSettings />} />
+            <Route path="/account-settings" element={<AccountSettings />} />
             <Route path="/addlink" element={<AddLink />} />
             <Route path="/add-link" element={<AddLink />} />
             <Route path="/preview" element={<Preview />} />

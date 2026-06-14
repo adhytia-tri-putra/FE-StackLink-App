@@ -12,6 +12,7 @@ const AuthLayout: React.FC = () => {
     "/links",
     "/insights",
     "/profile-settings",
+    "/account-settings",
     "/addlink",
     "/add-link",
     "/old-dashboard",
