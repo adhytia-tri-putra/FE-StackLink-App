@@ -72,6 +72,14 @@ export const authService = {
     });
   },
 
+  resendVerification: async (email: string): Promise<{ developmentToken?: string }> => {
+    const response = await apiRequest("/api/auth/resend-verification", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+    return response.data || {};
+  },
+
   logout: async () => {
     try {
       await apiRequest("/api/auth/logout", {

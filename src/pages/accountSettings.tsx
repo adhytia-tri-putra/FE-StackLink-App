@@ -45,7 +45,23 @@ const AccountSettings: React.FC = () => {
       <div className="mx-auto max-w-3xl space-y-5">
         <header><h1 className="text-3xl font-semibold text-on-surface">Account Settings</h1><p className="mt-2 text-on-surface-variant">Manage your login identity and account security.</p></header>
 
-        <form className="rounded-[20px] border border-outline-variant/60 bg-surface-container-lowest p-5 shadow-soft" onSubmit={(event) => { event.preventDefault(); void run(() => accountService.updateAccount(email, username), "Account details updated."); }}>
+        <form className="rounded-[20px] border border-outline-variant/60 bg-surface-container-lowest p-5 shadow-soft" onSubmit={(event) => { event.preventDefault(); void (async () => {
+          setBusy(true);
+          try {
+            const response = await accountService.updateAccount(email, username);
+            if (response.data?.requiresVerification) {
+              authService.clearToken();
+              const token = response.data.developmentToken ? `?token=${encodeURIComponent(response.data.developmentToken)}` : "";
+              navigate(`/verify-email${token}`, { replace: true, state: { email } });
+              return;
+            }
+            setStatus("Account details updated.");
+          } catch (error) {
+            setStatus((error as Error).message || "Request failed.");
+          } finally {
+            setBusy(false);
+          }
+        })(); }}>
           <h2 className="text-xl font-semibold text-on-surface">Login identity</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <label className="text-sm font-medium text-on-surface">Email<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} className={inputClass} required /></label>
