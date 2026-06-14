@@ -116,6 +116,11 @@ export const profileService = {
     return mapUserToProfile(response.data);
   },
 
+  getPublishingDiagnostics: async () => {
+    const response = await apiRequest("/api/profiles/publishing/diagnostics", { method: "GET" });
+    return response.data;
+  },
+
   getPreviewProfile: async (): Promise<ProfileData> => {
     const response = await apiRequest("/api/profiles/preview", { method: "GET" });
     if (!response.success) {

@@ -200,6 +200,8 @@ const LinksPage: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editUrl, setEditUrl] = useState("");
+  const [editStartsAt, setEditStartsAt] = useState("");
+  const [editEndsAt, setEditEndsAt] = useState("");
   const [draggedLinkId, setDraggedLinkId] = useState<string | null>(null);
   const [dragOverLinkId, setDragOverLinkId] = useState<string | null>(null);
   const [orderStatus, setOrderStatus] = useState("");
@@ -280,6 +282,9 @@ const LinksPage: React.FC = () => {
     setEditingId(link.id);
     setEditTitle(link.title);
     setEditUrl(link.url);
+    const localValue = (value?: string | null) => value ? new Date(new Date(value).getTime() - new Date(value).getTimezoneOffset() * 60000).toISOString().slice(0, 16) : "";
+    setEditStartsAt(localValue(link.startsAt));
+    setEditEndsAt(localValue(link.endsAt));
   };
 
   const handleSaveEdit = async (id: string) => {
@@ -294,11 +299,13 @@ const LinksPage: React.FC = () => {
       await linkService.updateLink(id, {
         title: editTitle.trim(),
         url: nextUrl,
+        startsAt: editStartsAt ? new Date(editStartsAt).toISOString() : null,
+        endsAt: editEndsAt ? new Date(editEndsAt).toISOString() : null,
       });
       setLinks((prev) =>
         prev.map((link) =>
           link.id === id
-            ? { ...link, title: editTitle.trim(), url: nextUrl }
+            ? { ...link, title: editTitle.trim(), url: nextUrl, startsAt: editStartsAt ? new Date(editStartsAt).toISOString() : null, endsAt: editEndsAt ? new Date(editEndsAt).toISOString() : null }
             : link,
         ),
       );
@@ -545,6 +552,10 @@ const LinksPage: React.FC = () => {
                               />
                             </label>
                           </div>
+                          <div className="grid gap-4 sm:grid-cols-2">
+                            <label className="block"><span className="text-sm font-semibold text-on-surface">Starts at</span><input type="datetime-local" value={editStartsAt} onChange={(event) => setEditStartsAt(event.target.value)} className="mt-2 w-full rounded-xl bg-surface-container-low px-4 py-2.5" /></label>
+                            <label className="block"><span className="text-sm font-semibold text-on-surface">Ends at</span><input type="datetime-local" value={editEndsAt} onChange={(event) => setEditEndsAt(event.target.value)} className="mt-2 w-full rounded-xl bg-surface-container-low px-4 py-2.5" /></label>
+                          </div>
                           <div className="flex justify-end gap-3">
                             <button
                               onClick={() => setEditingId(null)}
@@ -588,6 +599,7 @@ const LinksPage: React.FC = () => {
                                   </span>
                                 )}
                               </h2>
+                              {(link.startsAt || link.endsAt) && <p className="mt-1 text-xs font-medium text-tertiary">{link.startsAt && new Date(link.startsAt) > new Date() ? `Scheduled ${new Date(link.startsAt).toLocaleString()}` : link.endsAt && new Date(link.endsAt) <= new Date() ? "Schedule expired" : `Active until ${link.endsAt ? new Date(link.endsAt).toLocaleString() : "no end date"}`}</p>}
                               <a
                                 href={normalizeUrl(link.url)}
                                 target="_blank"
