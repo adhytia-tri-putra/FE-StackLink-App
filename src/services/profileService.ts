@@ -30,6 +30,8 @@ export interface ProfileData {
   googleAnalyticsId?: string;
   metaPixelId?: string;
   tiktokPixelId?: string;
+  plan?: string;
+  planStatus?: string;
   links?: LinkData[];
 }
 
@@ -69,6 +71,8 @@ const mapUserToProfile = (user: any): ProfileData => ({
   googleAnalyticsId: user.googleAnalyticsId ?? "",
   metaPixelId: user.metaPixelId ?? "",
   tiktokPixelId: user.tiktokPixelId ?? "",
+  plan: user.plan ?? "FREE",
+  planStatus: user.planStatus ?? "ACTIVE",
   links: user.links?.map((link: any) => ({
     id: link.id,
     title: link.title,

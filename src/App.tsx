@@ -23,6 +23,7 @@ const ProfileSettings = lazy(() => import("./pages/profileSettings"));
 const AccountSettings = lazy(() => import("./pages/accountSettings"));
 const PublishingSettings = lazy(() => import("./pages/publishingSettings"));
 const InfoPage = lazy(() => import("./pages/infoPage"));
+const Billing = lazy(() => import("./pages/billing"));
 
 const RouteFallback = () => (
   <div className="flex min-h-screen items-center justify-center" role="status">
@@ -60,6 +61,7 @@ const App: React.FC = () => {
                   <Route path="/profile-settings" element={<ProfileSettings />} />
                   <Route path="/account-settings" element={<AccountSettings />} />
                   <Route path="/publishing" element={<PublishingSettings />} />
+                  <Route path="/billing" element={<Billing />} />
                   <Route path="/addlink" element={<AddLink />} />
                   <Route path="/add-link" element={<AddLink />} />
                   <Route path="/preview" element={<Preview />} />
