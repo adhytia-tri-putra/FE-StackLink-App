@@ -127,12 +127,15 @@ const getPublicProfileUrl = (profile?: ProfileData | null) => {
 };
 
 const previewSurfaceStyle = (profile?: ProfileData | null): React.CSSProperties => {
+  const fontFamily = profile?.fontFamily === "SERIF" ? "Georgia, serif" : profile?.fontFamily === "MONO" ? "ui-monospace, monospace" : profile?.fontFamily === "ROUNDED" ? "Nunito, ui-rounded, sans-serif" : "inherit";
+  if (profile?.backgroundImage) return { backgroundImage: `linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.2)), url(${profile.backgroundImage})`, backgroundSize: "cover", backgroundPosition: "center", color: profile.textColor || "#ffffff", fontFamily };
   if (profile?.theme === "gradient") {
     return {
       background: `linear-gradient(160deg, ${profile.bgGradientStart || "#eef6ff"} 0%, ${
         profile.bgGradientEnd || "#ffffff"
       } 100%)`,
       color: profile.textColor || "#1a1c1a",
+      fontFamily,
     };
   }
 
@@ -140,12 +143,14 @@ const previewSurfaceStyle = (profile?: ProfileData | null): React.CSSProperties 
     return {
       background: "linear-gradient(160deg, #1a1c1a 0%, #2f312e 100%)",
       color: profile.textColor || "#f1f1ed",
+      fontFamily,
     };
   }
 
   return {
     background: profile?.bgColor || "#eef6ff",
     color: profile?.textColor || "#1a1c1a",
+    fontFamily,
   };
 };
 

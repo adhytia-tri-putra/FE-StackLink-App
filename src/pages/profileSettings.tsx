@@ -51,6 +51,13 @@ const templates = [
   { id: "gradient", name: "Bold Gradient" },
 ] as const;
 
+const gallery = [
+  { id: "SOFT", name: "Soft Sky", bgType: "solid", start: "#eef6ff", end: "#ffffff", text: "#1a1c1a", button: "#2388ff" },
+  { id: "BOLD", name: "Electric", bgType: "gradient", start: "#5d6bff", end: "#1ebfc9", text: "#ffffff", button: "#18213d" },
+  { id: "MINIMAL", name: "Paper", bgType: "solid", start: "#f7f3eb", end: "#ffffff", text: "#29251f", button: "#725b3a" },
+  { id: "MIDNIGHT", name: "Midnight", bgType: "gradient", start: "#101827", end: "#29364d", text: "#f8fafc", button: "#7dd3fc" },
+] as const;
+
 type TemplateId = (typeof templates)[number]["id"];
 
 const readFileAsDataUrl = (file: File) =>
@@ -79,6 +86,9 @@ const ProfileSettings: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("");
+  const [themeTemplate, setThemeTemplate] = useState("SOFT");
+  const [fontFamily, setFontFamily] = useState("SYSTEM");
+  const [backgroundImage, setBackgroundImage] = useState("");
 
   useEffect(() => {
     const initialize = async () => {
@@ -104,6 +114,9 @@ const ProfileSettings: React.FC = () => {
         setGradientEnd(fetchedProfile.bgGradientEnd || "#ffffff");
         setTextColor(fetchedProfile.textColor || "#1a1c1a");
         setSelectedColor(fetchedProfile.customColor || buttonPresets[0].color);
+        setThemeTemplate(fetchedProfile.themeTemplate || "SOFT");
+        setFontFamily(fetchedProfile.fontFamily || "SYSTEM");
+        setBackgroundImage(fetchedProfile.backgroundImage || "");
       } catch (error) {
         console.error("Failed to load profile settings:", error);
         if (error instanceof Error && error.message.includes("401")) {
@@ -136,6 +149,9 @@ const ProfileSettings: React.FC = () => {
     bgGradientEnd: gradientEnd,
     textColor,
     customColor: selectedColor,
+    themeTemplate,
+    fontFamily,
+    backgroundImage,
   };
 
   const handleAvatarChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -179,6 +195,9 @@ const ProfileSettings: React.FC = () => {
         bgGradientEnd: gradientEnd,
         textColor,
         buttonColor: selectedColor,
+        themeTemplate,
+        fontFamily,
+        backgroundImage: backgroundImage || null,
       });
       const syncedProfile = {
         ...updatedProfile,
@@ -188,6 +207,9 @@ const ProfileSettings: React.FC = () => {
         bgGradientEnd: gradientEnd,
         textColor,
         customColor: selectedColor,
+        themeTemplate,
+        fontFamily,
+        backgroundImage: backgroundImage || null,
         avatarUrl: avatarPreview || updatedProfile.avatarUrl,
       };
       setProfile(syncedProfile);
@@ -285,6 +307,7 @@ const ProfileSettings: React.FC = () => {
                   <h2 className="text-[22px] font-medium leading-tight text-on-surface">Appearance</h2>
                 </div>
                 <div className="mt-5 grid gap-4 xl:grid-cols-[280px_1fr]">
+                  <div className="xl:col-span-2"><p className="text-[15px] font-medium text-on-surface">Theme gallery</p><div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{gallery.map((item) => <button type="button" key={item.id} onClick={() => { setThemeTemplate(item.id); setBgType(item.bgType); setBgColor(item.start); setGradientStart(item.start); setGradientEnd(item.end); setTextColor(item.text); setSelectedColor(item.button); }} className={`rounded-2xl border-2 p-3 text-left ${themeTemplate === item.id ? "border-primary" : "border-outline-variant/50"}`}><span className="block h-16 rounded-xl" style={{ background: item.bgType === "gradient" ? `linear-gradient(145deg, ${item.start}, ${item.end})` : item.start }} /><span className="mt-2 block text-sm font-semibold">{item.name}</span></button>)}</div><div className="mt-4 grid gap-3 sm:grid-cols-2"><label className="text-sm font-medium">Font<select value={fontFamily} onChange={(event) => setFontFamily(event.target.value)} className="mt-2 w-full rounded-xl bg-surface-container-low px-4 py-3"><option value="SYSTEM">System</option><option value="SERIF">Serif</option><option value="MONO">Monospace</option><option value="ROUNDED">Rounded</option></select></label><label className="text-sm font-medium">Background image URL<input value={backgroundImage} onChange={(event) => setBackgroundImage(event.target.value)} placeholder="https://..." className="mt-2 w-full rounded-xl bg-surface-container-low px-4 py-3" /></label></div></div>
                   <div>
                     <p className="text-[15px] font-medium text-on-surface">Template</p>
                     <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-1">

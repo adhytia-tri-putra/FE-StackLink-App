@@ -36,6 +36,9 @@ export interface ProfileData {
   planStatus?: string;
   role?: string;
   suspendedAt?: string | null;
+  themeTemplate?: string;
+  fontFamily?: string;
+  backgroundImage?: string | null;
   links?: LinkData[];
 }
 
@@ -53,6 +56,9 @@ export interface ThemeUpdatePayload {
   bgGradientEnd?: string;
   textColor?: string;
   buttonColor?: string;
+  themeTemplate?: string;
+  fontFamily?: string;
+  backgroundImage?: string | null;
 }
 
 const mapUserToProfile = (user: any): ProfileData => ({
@@ -79,6 +85,9 @@ const mapUserToProfile = (user: any): ProfileData => ({
   planStatus: user.planStatus ?? "ACTIVE",
   role: user.role ?? "USER",
   suspendedAt: user.suspendedAt ?? null,
+  themeTemplate: user.themeTemplate ?? "SOFT",
+  fontFamily: user.fontFamily ?? "SYSTEM",
+  backgroundImage: user.backgroundImage ?? null,
   links: user.links?.map((link: any) => ({
     id: link.id,
     title: link.title,
