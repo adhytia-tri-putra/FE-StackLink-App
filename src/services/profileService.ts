@@ -23,6 +23,13 @@ export interface ProfileData {
   bgGradientEnd?: string;
   textColor?: string;
   customColor?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  socialImage?: string;
+  customDomain?: string;
+  googleAnalyticsId?: string;
+  metaPixelId?: string;
+  tiktokPixelId?: string;
   links?: LinkData[];
 }
 
@@ -55,6 +62,13 @@ const mapUserToProfile = (user: any): ProfileData => ({
   bgGradientEnd: user.bgGradientEnd ?? "#ffffff",
   textColor: user.textColor ?? "#1a1c1a",
   customColor: user.buttonColor ?? "#2388ff",
+  seoTitle: user.seoTitle ?? "",
+  seoDescription: user.seoDescription ?? "",
+  socialImage: user.socialImage ?? "",
+  customDomain: user.customDomain ?? "",
+  googleAnalyticsId: user.googleAnalyticsId ?? "",
+  metaPixelId: user.metaPixelId ?? "",
+  tiktokPixelId: user.tiktokPixelId ?? "",
   links: user.links?.map((link: any) => ({
     id: link.id,
     title: link.title,
@@ -94,6 +108,14 @@ export const profileService = {
     return response.data;
   },
 
+  updatePublishing: async (payload: Partial<ProfileData>): Promise<ProfileData> => {
+    const response = await apiRequest("/api/profiles/publishing", {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    });
+    return mapUserToProfile(response.data);
+  },
+
   getPreviewProfile: async (): Promise<ProfileData> => {
     const response = await apiRequest("/api/profiles/preview", { method: "GET" });
     if (!response.success) {
@@ -122,6 +144,13 @@ export const profileService = {
       bgGradientEnd: data.bgGradientEnd,
       textColor: data.textColor,
       customColor: data.buttonColor,
+      seoTitle: data.seoTitle,
+      seoDescription: data.seoDescription,
+      socialImage: data.socialImage,
+      customDomain: data.customDomain,
+      googleAnalyticsId: data.googleAnalyticsId,
+      metaPixelId: data.metaPixelId,
+      tiktokPixelId: data.tiktokPixelId,
       links: data.links?.map((link: any) => ({
         id: link.id,
         title: link.title,
@@ -131,6 +160,20 @@ export const profileService = {
         isActive: true,
         position: link.position,
       })),
+    };
+  },
+
+  getPublicProfileByDomain: async (domain: string): Promise<ProfileData> => {
+    const response = await apiRequest(`/u/domain/${encodeURIComponent(domain)}`, { method: "GET" });
+    const data = response.data;
+    return {
+      username: data.username, name: data.name, headline: data.headline, bio: data.bio,
+      avatarUrl: data.avatar, theme: data.bgType, bgColor: data.bgColor,
+      bgGradientStart: data.bgGradientStart, bgGradientEnd: data.bgGradientEnd,
+      textColor: data.textColor, customColor: data.buttonColor, seoTitle: data.seoTitle,
+      seoDescription: data.seoDescription, socialImage: data.socialImage, customDomain: data.customDomain,
+      googleAnalyticsId: data.googleAnalyticsId, metaPixelId: data.metaPixelId, tiktokPixelId: data.tiktokPixelId,
+      links: data.links?.map((link: any) => ({ ...link, active: true, isActive: true })),
     };
   },
 

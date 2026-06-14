@@ -482,9 +482,12 @@ const LivePreviewPage: React.FC = () => {
       setError("");
 
       try {
+        const customHost = !["localhost", "127.0.0.1"].includes(window.location.hostname) && !window.location.hostname.endsWith("netlify.app");
         const data = username
           ? await profileService.getPublicProfile(username)
-          : await profileService.getPreviewProfile();
+          : customHost
+            ? await profileService.getPublicProfileByDomain(window.location.hostname)
+            : await profileService.getPreviewProfile();
         setProfile(data);
       } catch (err) {
         const hasToken = Boolean(authService.getToken());
@@ -501,9 +504,33 @@ const LivePreviewPage: React.FC = () => {
     fetchProfile();
   }, [username]);
 
+  useEffect(() => {
+    if (!profile || (!username && ["localhost", "127.0.0.1"].includes(window.location.hostname))) return;
+    const title = profile.seoTitle || profile.name || profile.username || "StackLink";
+    const description = profile.seoDescription || profile.bio || profile.headline || "View this StackLink profile";
+    document.title = title;
+    const setMeta = (selector: string, attribute: string, value: string) => {
+      let element = document.head.querySelector<HTMLMetaElement>(selector);
+      if (!element) { element = document.createElement("meta"); element.setAttribute(attribute, selector.includes("property=") ? selector.match(/"(.+)"/)?.[1] || "" : selector.match(/"(.+)"/)?.[1] || ""); document.head.appendChild(element); }
+      element.content = value;
+    };
+    setMeta('meta[name="description"]', "name", description);
+    setMeta('meta[property="og:title"]', "property", title);
+    setMeta('meta[property="og:description"]', "property", description);
+    if (profile.socialImage || profile.avatarUrl) setMeta('meta[property="og:image"]', "property", profile.socialImage || profile.avatarUrl || "");
+
+    const scripts: HTMLScriptElement[] = [];
+    const addScript = (src: string, code?: string) => { const script = document.createElement("script"); if (src) script.src = src; if (code) script.text = code; script.async = true; script.dataset.stacklinkTracker = "true"; document.head.appendChild(script); scripts.push(script); };
+    if (profile.googleAnalyticsId) { addScript(`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(profile.googleAnalyticsId)}`); addScript("", `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${profile.googleAnalyticsId}');`); }
+    if (profile.metaPixelId) addScript("", `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${profile.metaPixelId}');fbq('track','PageView');`);
+    if (profile.tiktokPixelId) addScript("", `!function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.load=function(e){var s=d.createElement('script');s.async=true;s.src='https://analytics.tiktok.com/i18n/pixel/events.js?sdkid='+e;d.head.appendChild(s)};ttq.load('${profile.tiktokPixelId}');ttq.page()}(window,document,'ttq');`);
+    return () => { scripts.forEach((script) => script.remove()); };
+  }, [profile, username]);
+
   const handleLinkClick = (link: PreviewLink) => {
-    if (!username) return;
-    linkService.trackClick(username, link.id).catch((err) => console.error("Analitik error", err));
+    const publicUsername = username || profile?.username;
+    if (!publicUsername) return;
+    linkService.trackClick(publicUsername, link.id).catch((err) => console.error("Analitik error", err));
   };
 
   if (loading) {

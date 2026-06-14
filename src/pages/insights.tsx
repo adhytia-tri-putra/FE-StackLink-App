@@ -133,6 +133,8 @@ const Insights: React.FC = () => {
             </h1>
           </div>
 
+          <div className="flex flex-wrap items-center gap-2">
+          <button type="button" onClick={() => void analyticsService.exportCsv(timePeriod).catch((error) => window.alert((error as Error).message))} className="rounded-full border border-primary px-4 py-2 text-sm font-semibold text-primary">Export CSV</button>
           <div className="flex w-fit rounded-full border border-outline-variant/60 bg-surface-container-lowest p-1 shadow-soft">
             {(["7d", "30d", "90d"] as const).map((period) => (
               <button
@@ -145,7 +147,7 @@ const Insights: React.FC = () => {
                 {period.toUpperCase()}
               </button>
             ))}
-          </div>
+          </div></div>
         </header>
 
         <div className="grid gap-4 md:grid-cols-3">

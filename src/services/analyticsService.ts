@@ -181,6 +181,22 @@ export const analyticsService = {
     return response.data;
   },
 
+  exportCsv: async (period: AnalyticsPeriod): Promise<void> => {
+    const token = localStorage.getItem("stacklink_token");
+    const base = API_BASE_URL.replace(/\/$/, "");
+    const response = await fetch(`${base}/api/analytics/export.csv?period=${period}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    if (!response.ok) throw new Error("Failed to export analytics");
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `stacklink-analytics-${period}.csv`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  },
+
   subscribe: async (
     onEvent: (event: { type: string; payload: any }) => void
   ): Promise<{ close: () => void }> => {

@@ -8,6 +8,11 @@ const AddLink: React.FC = () => {
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
   const [description, setDescription] = useState("");
+  const [startsAt, setStartsAt] = useState("");
+  const [endsAt, setEndsAt] = useState("");
+  const [utmSource, setUtmSource] = useState("");
+  const [utmMedium, setUtmMedium] = useState("");
+  const [utmCampaign, setUtmCampaign] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -22,15 +27,18 @@ const AddLink: React.FC = () => {
         return;
       }
 
-      const fullUrl = url.startsWith("http") ? url : `https://${url}`;
+      const fullUrl = new URL(url.startsWith("http") ? url : `https://${url}`);
+      if (utmSource) fullUrl.searchParams.set("utm_source", utmSource);
+      if (utmMedium) fullUrl.searchParams.set("utm_medium", utmMedium);
+      if (utmCampaign) fullUrl.searchParams.set("utm_campaign", utmCampaign);
       
       await linkService.createLink(
         title,
-        fullUrl,
-        description || null
+        fullUrl.toString(),
+        description || null,
+        { startsAt: startsAt ? new Date(startsAt).toISOString() : null, endsAt: endsAt ? new Date(endsAt).toISOString() : null }
       );
 
-      alert("Link berhasil ditambahkan!");
       navigate("/links");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Gagal menambahkan link";
@@ -71,6 +79,17 @@ const AddLink: React.FC = () => {
                 required
               />
             </label>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="block"><span className="text-[15px] font-semibold text-on-surface">Starts at</span><input type="datetime-local" value={startsAt} onChange={(event) => setStartsAt(event.target.value)} className="mt-2 w-full rounded-xl bg-surface-container-low px-4 py-3" /></label>
+              <label className="block"><span className="text-[15px] font-semibold text-on-surface">Ends at</span><input type="datetime-local" value={endsAt} onChange={(event) => setEndsAt(event.target.value)} className="mt-2 w-full rounded-xl bg-surface-container-low px-4 py-3" /></label>
+            </div>
+
+            <fieldset className="rounded-2xl border border-outline-variant/60 p-4"><legend className="px-2 text-sm font-semibold">UTM builder</legend><div className="grid gap-3 sm:grid-cols-3">
+              <input value={utmSource} onChange={(event) => setUtmSource(event.target.value)} placeholder="Source" className="rounded-xl bg-surface-container-low px-3 py-2.5" />
+              <input value={utmMedium} onChange={(event) => setUtmMedium(event.target.value)} placeholder="Medium" className="rounded-xl bg-surface-container-low px-3 py-2.5" />
+              <input value={utmCampaign} onChange={(event) => setUtmCampaign(event.target.value)} placeholder="Campaign" className="rounded-xl bg-surface-container-low px-3 py-2.5" />
+            </div></fieldset>
 
             <label className="block">
               <span className="text-[15px] font-semibold text-on-surface">URL *</span>

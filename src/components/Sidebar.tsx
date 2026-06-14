@@ -73,6 +73,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onOpenPreview }) => {
     { icon: IconInsights, label: "Insights", path: "/insights", match: ["/insights"] },
     { icon: IconSettings, label: "Profile Settings", path: "/profile-settings", match: ["/profile-settings"] },
     { icon: IconUser, label: "Account Settings", path: "/account-settings", match: ["/account-settings"] },
+    { icon: IconEye, label: "Publishing", path: "/publishing", match: ["/publishing"] },
   ];
 
   const isActive = (matches: string[]) => matches.some((path) => location.pathname === path);
@@ -167,7 +168,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onOpenPreview }) => {
           </button>
 
           <div className="mt-6 border-t border-outline-variant/70 pt-5">
-            <button className="flex w-full items-center gap-4 rounded-full px-4 py-2.5 text-[15px] font-medium text-on-surface transition-colors hover:bg-surface-container-low">
+            <button onClick={() => navigate("/help")} className="flex w-full items-center gap-4 rounded-full px-4 py-2.5 text-[15px] font-medium text-on-surface transition-colors hover:bg-surface-container-low">
               <IconHelp className="h-5 w-5" />
               Help
             </button>
@@ -184,7 +185,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onOpenPreview }) => {
 
       <nav className="fixed bottom-2 left-2 right-2 z-50 grid grid-cols-5 gap-1 rounded-[20px] border border-outline-variant/70 bg-surface-container-lowest/95 p-1.5 shadow-soft backdrop-blur lg:hidden">
         {navItems
-          .filter((item) => !["Profile Settings", "Account Settings"].includes(item.label))
+          .filter((item) => !["Profile Settings", "Account Settings", "Publishing"].includes(item.label))
           .map((item) => {
             const Icon = item.icon;
             const active = isActive(item.match);
@@ -240,6 +241,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onOpenPreview }) => {
                 <IconUser className="h-4 w-4" />
                 Account Settings
               </button>
+              <button type="button" onClick={() => { setIsAccountMenuOpen(false); navigate("/publishing"); }} className="mt-1 flex w-full items-center gap-2 rounded-2xl px-3 py-2 text-left text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container"><IconEye className="h-4 w-4" />Publishing</button>
               <button
                 type="button"
                 onClick={() => {

@@ -18,18 +18,26 @@ import ProfileSettings from "./pages/profileSettings";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AccountSettings from "./pages/accountSettings";
 import VerifyEmail from "./pages/auth/verifyEmail";
+import PublishingSettings from "./pages/publishingSettings";
+import ToastHost from "./components/ToastHost";
+import InfoPage from "./pages/infoPage";
 
 const App: React.FC = () => {
+  const isCustomHost = !["localhost", "127.0.0.1"].includes(window.location.hostname) && !window.location.hostname.endsWith("netlify.app");
   return (
     <BrowserRouter>
+      <ToastHost />
       <Routes>
         <Route element={<AuthLayout />}>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/" element={isCustomHost ? <Preview /> : <Navigate to="/dashboard" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/privacy" element={<InfoPage />} />
+          <Route path="/terms" element={<InfoPage />} />
+          <Route path="/help" element={<InfoPage />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/welcome" element={<Welcome />} />
             <Route path="/dashboard" element={<DashboardOverview />} />
@@ -37,6 +45,7 @@ const App: React.FC = () => {
             <Route path="/insights" element={<Insights />} />
             <Route path="/profile-settings" element={<ProfileSettings />} />
             <Route path="/account-settings" element={<AccountSettings />} />
+            <Route path="/publishing" element={<PublishingSettings />} />
             <Route path="/addlink" element={<AddLink />} />
             <Route path="/add-link" element={<AddLink />} />
             <Route path="/preview" element={<Preview />} />

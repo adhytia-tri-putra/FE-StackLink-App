@@ -5,6 +5,8 @@ export interface EditLinkPayload {
   url?: string;
   icon?: string | null;
   isActive?: boolean;
+  startsAt?: string | null;
+  endsAt?: string | null;
 }
 
 export interface LinkItem {
@@ -15,6 +17,8 @@ export interface LinkItem {
   isActive: boolean;
   position: number;
   clicks?: number;
+  startsAt?: string | null;
+  endsAt?: string | null;
 }
 
 export const linkService = {
@@ -24,10 +28,10 @@ export const linkService = {
     return response.data;
   },
 
-  createLink: async (title: string, url: string, icon?: string | null) => {
+  createLink: async (title: string, url: string, icon?: string | null, schedule?: { startsAt?: string | null; endsAt?: string | null }) => {
     const response = await apiRequest("/api/links", {
       method: "POST",
-      body: JSON.stringify({ title, url, icon }),
+      body: JSON.stringify({ title, url, icon, ...schedule }),
     });
 
     if (!response.success) throw new Error(response.message || "Gagal membuat link");

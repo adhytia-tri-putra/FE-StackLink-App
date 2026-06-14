@@ -97,9 +97,9 @@ const Login: React.FC = () => {
       </p>
 
       <div className="mt-12 flex gap-6 text-xs text-gray-400">
-        <a href="#" className="hover:text-gray-600">Privacy Policy</a>
-        <a href="#" className="hover:text-gray-600">Terms of Service</a>
-        <a href="#" className="hover:text-gray-600">Help Center</a>
+        <Link to="/privacy" className="hover:text-gray-600">Privacy Policy</Link>
+        <Link to="/terms" className="hover:text-gray-600">Terms of Service</Link>
+        <Link to="/help" className="hover:text-gray-600">Help Center</Link>
       </div>
     </section>
   );

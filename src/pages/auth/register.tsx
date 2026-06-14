@@ -90,7 +90,7 @@ const Register: React.FC = () => {
           <div className="flex items-center gap-3">
             <input type="checkbox" id="terms" className="h-4 w-4 rounded border-gray-300 text-[#2388ff] focus:ring-[#2388ff]" required />
             <label htmlFor="terms" className="text-xs text-gray-500">
-              I agree to the <a href="#" className="font-semibold text-[#2388ff]">Terms of Service</a> and <a href="#" className="font-semibold text-[#2388ff]">Privacy Policy</a>
+              I agree to the <Link to="/terms" className="font-semibold text-[#2388ff]">Terms of Service</Link> and <Link to="/privacy" className="font-semibold text-[#2388ff]">Privacy Policy</Link>
             </label>
           </div>
 
