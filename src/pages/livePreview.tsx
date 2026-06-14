@@ -6,6 +6,8 @@ import { getDisplayName } from "../lib/profile";
 import { linkService, LinkItem } from "../services/linkService";
 import { profileService, LinkData, ProfileData } from "../services/profileService";
 import { authService } from "../services/authService";
+import TrackingConsentBanner from "../components/TrackingConsentBanner";
+import { getTrackingConsent, TRACKING_CONSENT_EVENT } from "../lib/trackingConsent";
 
 type IconProps = React.SVGProps<SVGSVGElement>;
 
@@ -468,12 +470,19 @@ const LivePreviewPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isMobile, setIsMobile] = useState(false);
+  const [trackingConsent, setConsentState] = useState(() => getTrackingConsent());
 
   useEffect(() => {
     const resizeHandler = () => setIsMobile(window.innerWidth < 1024);
     resizeHandler();
     window.addEventListener("resize", resizeHandler);
     return () => window.removeEventListener("resize", resizeHandler);
+  }, []);
+
+  useEffect(() => {
+    const updateConsent = (event: Event) => setConsentState((event as CustomEvent).detail);
+    window.addEventListener(TRACKING_CONSENT_EVENT, updateConsent);
+    return () => window.removeEventListener(TRACKING_CONSENT_EVENT, updateConsent);
   }, []);
 
   useEffect(() => {
@@ -519,13 +528,15 @@ const LivePreviewPage: React.FC = () => {
     setMeta('meta[property="og:description"]', "property", description);
     if (profile.socialImage || profile.avatarUrl) setMeta('meta[property="og:image"]', "property", profile.socialImage || profile.avatarUrl || "");
 
+    if (trackingConsent !== "accepted") return;
+
     const scripts: HTMLScriptElement[] = [];
     const addScript = (src: string, code?: string) => { const script = document.createElement("script"); if (src) script.src = src; if (code) script.text = code; script.async = true; script.dataset.stacklinkTracker = "true"; document.head.appendChild(script); scripts.push(script); };
     if (profile.googleAnalyticsId) { addScript(`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(profile.googleAnalyticsId)}`); addScript("", `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${profile.googleAnalyticsId}');`); }
     if (profile.metaPixelId) addScript("", `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${profile.metaPixelId}');fbq('track','PageView');`);
     if (profile.tiktokPixelId) addScript("", `!function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.load=function(e){var s=d.createElement('script');s.async=true;s.src='https://analytics.tiktok.com/i18n/pixel/events.js?sdkid='+e;d.head.appendChild(s)};ttq.load('${profile.tiktokPixelId}');ttq.page()}(window,document,'ttq');`);
     return () => { scripts.forEach((script) => script.remove()); };
-  }, [profile, username]);
+  }, [profile, trackingConsent, username]);
 
   const handleLinkClick = (link: PreviewLink) => {
     const publicUsername = username || profile?.username;
@@ -567,6 +578,7 @@ const LivePreviewPage: React.FC = () => {
   return (
     <section className="flex min-h-screen items-center justify-center bg-surface p-4 sm:p-6">
       {previewPanel}
+      <TrackingConsentBanner enabled={Boolean(profile.googleAnalyticsId || profile.metaPixelId || profile.tiktokPixelId)} />
     </section>
   );
 };
