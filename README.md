@@ -1,32 +1,105 @@
-# Stacklink Frontend
+# StackLink Frontend
 
-Frontend ini dibangun dengan React + Vite dan bisa di-deploy ke Netlify.
+React + Vite frontend untuk StackLink, aplikasi link-in-bio full-stack dengan profile builder, public profile, SEO publishing, analytics, admin dashboard, billing UI, dan rich content blocks.
 
-## Environment variable
+## Fitur
 
-Untuk local development atau deploy production, set:
+- Login, register, email verification, forgot password, dan protected routes.
+- Dashboard, profile settings, links, insights, publishing, billing, dan admin page.
+- Live preview public profile.
+- Theme gallery, font, background image, custom color, dan avatar upload.
+- Link dan rich content blocks: link, YouTube, Spotify, social, heading, divider, contact, donation.
+- SEO preview dan Netlify Edge Function untuk crawler-visible metadata.
+- Tracking consent untuk Google Analytics, Meta Pixel, dan TikTok Pixel.
+- Analytics dashboard dengan custom date range, CSV export, realtime update, country, browser, OS, referrer, dan device split.
+- Playwright E2E dan Vitest unit tests.
+
+## Tech Stack
+
+- React 19
+- Vite
+- React Router
+- Tailwind CSS
+- Supabase client optional untuk realtime analytics
+- Sentry React optional
+- Vitest
+- Playwright
+
+## Setup Lokal
+
+```bash
+npm install
+cp .env.example .env
+npm run dev
+```
+
+Untuk development lokal, kosongkan `VITE_API_BASE_URL` dan arahkan proxy ke backend lokal:
 
 ```env
-VITE_API_BASE_URL=https://be-stacklink-app-production.up.railway.app
+VITE_API_BASE_URL=
+VITE_DEV_PROXY_TARGET=http://127.0.0.1:5000
+VITE_SENTRY_DSN=
+VITE_SENTRY_TRACES_SAMPLE_RATE=0.1
+API_BASE_URL=http://127.0.0.1:5000
 ```
 
-Frontend akan mengirim request API langsung ke backend tersebut, termasuk endpoint WebSocket analytics.
-
-Untuk development lokal, kosongkan `VITE_API_BASE_URL` dan gunakan `VITE_DEV_PROXY_TARGET=http://127.0.0.1:5000`. Vite akan meneruskan `/api`, `/u`, dan WebSocket analytics ke backend.
-
-## Deploy ke Netlify
-
-Gunakan setting berikut di Netlify:
+Frontend berjalan di:
 
 ```txt
-Build command: npm run build
-Publish directory: dist
+http://localhost:5173
 ```
 
-Tambahkan environment variable ini di Netlify Site Settings:
+## Environment Variables
+
+| Variable | Fungsi |
+| --- | --- |
+| `VITE_API_BASE_URL` | URL backend production. Kosongkan untuk memakai Vite proxy lokal. |
+| `VITE_DEV_PROXY_TARGET` | Target proxy lokal untuk `/api` dan `/u`. |
+| `VITE_SENTRY_DSN` | DSN Sentry frontend. |
+| `VITE_SENTRY_TRACES_SAMPLE_RATE` | Sampling tracing Sentry frontend. |
+| `API_BASE_URL` | URL backend untuk Netlify Edge Function SEO. |
+| `VITE_SUPABASE_URL` | Supabase URL untuk realtime analytics optional. |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Publishable key Supabase optional. |
+
+## Script
+
+```bash
+npm run dev
+npm run build
+npm run lint
+npm test
+npm run test:e2e
+npm run preview
+```
+
+## Deployment Netlify
+
+Build command:
+
+```bash
+npm run build
+```
+
+Publish directory:
 
 ```txt
-VITE_API_BASE_URL = https://be-stacklink-app-production.up.railway.app
+dist
 ```
 
-File `netlify.toml` sudah dikonfigurasi untuk SPA redirect ke `index.html`, jadi route React tetap jalan saat page di-refresh langsung di Netlify.
+Set environment production:
+
+```env
+VITE_API_BASE_URL=https://your-backend-domain
+API_BASE_URL=https://your-backend-domain
+```
+
+`netlify.toml` sudah mengatur SPA redirect dan Edge Function `profile-seo`.
+
+## Testing
+
+```bash
+npm test
+npm run lint
+npm run build
+npm run test:e2e
+```
